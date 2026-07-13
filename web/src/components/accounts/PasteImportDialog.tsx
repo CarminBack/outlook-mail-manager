@@ -31,6 +31,8 @@ export default function PasteImportDialog({ open, onClose, onImport }: Props) {
       await onImport({ content, separator, format });
       onClose();
       setContent('');
+    } catch (err: any) {
+      alert('导入失败: ' + (err.message || '未知错误'));
     } finally {
       setImporting(false);
     }

@@ -15,7 +15,7 @@ export default function Accounts() {
   const {
     accounts, loading, selectedIds, searchQuery, pagination,
     fetchAccounts, createAccount, updateAccount, deleteAccount, batchDelete,
-    exportAccounts, setSelectedIds, setSearchQuery, setPage, setPageSize,
+    importAccounts, exportAccounts, setSelectedIds, setSearchQuery, setPage, setPageSize,
   } = useAccountStore();
 
   const { tags, fetchTags, createTag, deleteTag, setAccountTags } = useTagStore();
@@ -244,7 +244,14 @@ export default function Accounts() {
         onDeleteTag={handleDeleteTag}
       />
       <ImportDialog open={importOpen} onClose={() => setImportOpen(false)} onImport={() => fetchAccounts()} />
-      <PasteImportDialog open={pasteOpen} onClose={() => setPasteOpen(false)} onImport={() => fetchAccounts()} />
+      <PasteImportDialog
+        open={pasteOpen}
+        onClose={() => setPasteOpen(false)}
+        onImport={async req => {
+          const result = await importAccounts(req);
+          toast.success(`导入完成：新增 ${result.imported}，跳过 ${result.skipped}，错误 ${result.errors.length}`);
+        }}
+      />
       {mailViewAccount && (
         <MailViewerDialog
           open={mailViewOpen}
