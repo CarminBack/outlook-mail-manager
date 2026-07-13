@@ -1,0 +1,15 @@
+services:
+  outlook-mail-manager:
+    image: ${IMAGE:-ghcr.io/carminback/outlook-mail-manager:latest}
+    container_name: outlook-mail-manager
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "127.0.0.1:${HOST_PORT:-3020}:3000"
+    volumes:
+      - outlook_mail_data:/app/server/data
+
+volumes:
+  outlook_mail_data:
+    name: outlook-mail-manager-data

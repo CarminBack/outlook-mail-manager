@@ -171,3 +171,15 @@ npm start
 ## License
 
 MIT
+
+## Docker 部署
+
+Fork 仓库会通过 GitHub Actions 构建并发布 `linux/amd64` 与 `linux/arm64` 镜像到 GHCR。
+
+```bash
+cp .env.example .env
+# 建议设置强随机 ACCESS_PASSWORD
+HOST_PORT=3020 docker compose up -d
+```
+
+默认镜像为 `ghcr.io/carminback/outlook-mail-manager:latest`，SQLite 数据保存在 Docker 卷 `outlook-mail-manager-data` 中，服务默认仅绑定到宿主机 `127.0.0.1:3020`，适合通过反向代理提供 HTTPS。
