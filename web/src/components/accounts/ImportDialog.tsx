@@ -83,7 +83,7 @@ export default function ImportDialog({ open, onClose, onImport }: Props) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 animate-[fadeIn_0.2s_ease-out]" onClick={handleClose}>
       <div className="bg-white dark:bg-zinc-900 rounded-xl shadow-2xl w-full max-w-2xl mx-4 p-6 max-h-[85vh] overflow-y-auto animate-[slideUp_0.2s_ease-out]" onClick={e => e.stopPropagation()}>
         <h2 className="text-lg font-semibold mb-4 text-zinc-900 dark:text-zinc-100">
-          {step === 'input' ? '文件导入' : '导入预览'}
+          {step === 'input' ? '导入账户' : '导入预览'}
         </h2>
 
         {step === 'input' ? (
@@ -96,6 +96,19 @@ export default function ImportDialog({ open, onClose, onImport }: Props) {
                 <span className="text-sm text-zinc-600 dark:text-zinc-400">{fileName || '点击选择 .txt / .csv 文件'}</span>
                 <input type="file" accept=".txt,.csv" onChange={handleFile} className="hidden" />
               </label>
+            </div>
+
+            {/* Paste content */}
+            <div>
+              <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">粘贴导入内容</label>
+              <textarea
+                value={content}
+                onChange={e => { setContent(e.target.value); setFileName(''); }}
+                rows={6}
+                className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
+                placeholder="每行一个账户，例如：email----password----client_id----refresh_token"
+              />
+              <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">可直接粘贴多行内容，也可以从上方选择文件。</p>
             </div>
 
             {/* Separator */}
