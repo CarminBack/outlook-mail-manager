@@ -89,7 +89,8 @@ cp .env.example .env
 | `PORT` | `3000` | 服务端口 |
 | `LOG_LEVEL` | `info` | 日志级别 |
 | `DB_PATH` | `./data/outlook.db` | SQLite 数据库路径（相对于 server/） |
-| `ACCESS_PASSWORD` | _(空)_ | 访问密码，留空则不启用认证 |
+| `ACCESS_USERNAME` | _(空)_ | 登录账号；设置后登录时必须同时填写账号 |
+| `ACCESS_PASSWORD` | _(空)_ | 登录密码，留空则不启用认证 |
 
 ### 开发模式
 

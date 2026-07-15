@@ -2,8 +2,9 @@ import { Context, Next } from 'koa';
 import crypto from 'crypto';
 import { config } from '../config';
 
-function hashPassword(password: string): string {
-  return crypto.createHash('sha256').update(password).digest('hex');
+function expectedToken(): string {
+  const credential = config.accessUsername ? `${config.accessUsername}:${config.accessPassword}` : config.accessPassword;
+  return crypto.createHash('sha256').update(credential).digest('hex');
 }
 
 export async function authMiddleware(ctx: Context, next: Next) {
@@ -12,7 +13,7 @@ export async function authMiddleware(ctx: Context, next: Next) {
   if (!ctx.path.startsWith('/api')) return next();
 
   const token = ctx.get('Authorization')?.replace('Bearer ', '');
-  if (!token || token !== hashPassword(config.accessPassword)) {
+  if (!token || token !== expectedToken()) {
     ctx.status = 401;
     ctx.body = { code: 401, data: null, message: 'Unauthorized' };
     return;

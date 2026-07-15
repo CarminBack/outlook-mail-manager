@@ -79,9 +79,9 @@ export const dashboardApi = {
 };
 
 export const authApi = {
-  check: () => request<{ required: boolean }>('/auth/check'),
-  login: (password: string) =>
-    request<{ token: string; required: boolean }>('/auth/login', { method: 'POST', body: JSON.stringify({ password }) }),
+  check: () => request<{ required: boolean; usernameRequired: boolean }>('/auth/check'),
+  login: (username: string, password: string) =>
+    request<{ token: string; required: boolean }>('/auth/login', { method: 'POST', body: JSON.stringify({ username, password }) }),
 };
 
 export const tagApi = {

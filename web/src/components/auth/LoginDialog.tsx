@@ -4,9 +4,11 @@ import { authApi } from '../../lib/api';
 interface Props {
   open: boolean;
   onSuccess: () => void;
+  usernameRequired: boolean;
 }
 
-export function LoginDialog({ open, onSuccess }: Props) {
+export function LoginDialog({ open, onSuccess, usernameRequired }: Props) {
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -14,17 +16,17 @@ export function LoginDialog({ open, onSuccess }: Props) {
   if (!open) return null;
 
   const handleLogin = async () => {
-    if (!password.trim()) return;
+    if ((usernameRequired && !username.trim()) || !password.trim()) return;
     setLoading(true);
     setError('');
     try {
-      const res = await authApi.login(password);
+      const res = await authApi.login(username, password);
       if (res.token) {
         localStorage.setItem('auth_token', res.token);
       }
       onSuccess();
     } catch {
-      setError('密码错误，请重试');
+      setError('用户名或密码错误，请重试');
     } finally {
       setLoading(false);
     }
@@ -40,9 +42,23 @@ export function LoginDialog({ open, onSuccess }: Props) {
             </svg>
           </div>
           <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">访问验证</h2>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">请输入访问密码以继续</p>
+          <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">请输入账号和密码以继续</p>
         </div>
         <div className="space-y-4">
+          {usernameRequired && (
+            <div>
+              <input
+                type="text"
+                value={username}
+                onChange={e => { setUsername(e.target.value); setError(''); }}
+                onKeyDown={e => { if (e.key === 'Enter') handleLogin(); }}
+                className="w-full px-3 py-2.5 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-zinc-400"
+                placeholder="请输入账号"
+                autoComplete="username"
+                autoFocus
+              />
+            </div>
+          )}
           <div>
             <input
               type="password"
@@ -50,14 +66,15 @@ export function LoginDialog({ open, onSuccess }: Props) {
               onChange={e => { setPassword(e.target.value); setError(''); }}
               onKeyDown={e => { if (e.key === 'Enter') handleLogin(); }}
               className="w-full px-3 py-2.5 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-zinc-400"
-              placeholder="请输入访问密码"
-              autoFocus
+              placeholder="请输入密码"
+              autoComplete="current-password"
+              autoFocus={!usernameRequired}
             />
             {error && <p className="text-red-500 text-xs mt-1.5">{error}</p>}
           </div>
           <button
             onClick={handleLogin}
-            disabled={loading || !password.trim()}
+            disabled={loading || (usernameRequired && !username.trim()) || !password.trim()}
             className="w-full py-2.5 text-sm rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
           >
             {loading ? '验证中...' : '登录'}

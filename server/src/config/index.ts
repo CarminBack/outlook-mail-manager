@@ -9,5 +9,6 @@ export const config = {
   port: parseInt(process.env.PORT || '3000', 10),
   logLevel: process.env.LOG_LEVEL || 'info',
   dbPath: path.resolve(__dirname, '../..', process.env.DB_PATH || './data/outlook.db'),
+  accessUsername: process.env.ACCESS_USERNAME || '',
   accessPassword: process.env.ACCESS_PASSWORD || '',
 };

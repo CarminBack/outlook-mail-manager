@@ -11,6 +11,7 @@ import { authApi } from './lib/api';
 export default function App() {
   const [authRequired, setAuthRequired] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
+  const [usernameRequired, setUsernameRequired] = useState(false);
   const [checking, setChecking] = useState(true);
 
   useEffect(() => {
@@ -22,6 +23,7 @@ export default function App() {
     try {
       const result = await authApi.check();
       setAuthRequired(result.required);
+      setUsernameRequired(result.usernameRequired);
       if (result.required && !localStorage.getItem('auth_token')) {
         setShowLogin(true);
       }
@@ -39,15 +41,18 @@ export default function App() {
   return (
     <BrowserRouter>
       <Toaster position="top-right" richColors closeButton />
-      {authRequired && <LoginDialog open={showLogin} onSuccess={() => setShowLogin(false)} />}
-      <Routes>
-        <Route element={<AppLayout />}>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/accounts" element={<Accounts />} />
-          <Route path="/proxy" element={<ProxySettings />} />
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
-        </Route>
-      </Routes>
+      {authRequired && showLogin ? (
+        <LoginDialog open usernameRequired={usernameRequired} onSuccess={() => setShowLogin(false)} />
+      ) : (
+        <Routes>
+          <Route element={<AppLayout />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/accounts" element={<Accounts />} />
+            <Route path="/proxy" element={<ProxySettings />} />
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          </Route>
+        </Routes>
+      )}
     </BrowserRouter>
   );
 }
