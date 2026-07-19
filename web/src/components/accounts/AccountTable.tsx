@@ -5,7 +5,7 @@ import type { Account, Tag } from '../../types';
 import { maskText } from '../../lib/utils';
 import ContextMenu from './ContextMenu';
 
-type SortKey = 'email' | 'password' | 'client_id' | 'status' | 'token_refreshed_at';
+type SortKey = 'email' | 'password' | 'client_id' | 'status' | 'token_refreshed_at' | 'created_at';
 type SortDir = 'asc' | 'desc' | null;
 
 export const ALL_COLUMNS = [
@@ -17,12 +17,13 @@ export const ALL_COLUMNS = [
   { key: 'refresh_token', label: '令牌', defaultVisible: false },
   { key: 'status', label: '状态', defaultVisible: true },
   { key: 'token_status', label: 'Token', defaultVisible: true },
+  { key: 'created_at', label: '加入时间', defaultVisible: true },
   { key: 'actions', label: '操作', defaultVisible: true },
 ] as const;
 
 export type ColumnKey = (typeof ALL_COLUMNS)[number]['key'];
 
-export const COLUMN_STORAGE_KEY = 'account-visible-columns';
+export const COLUMN_STORAGE_KEY = 'account-visible-columns-v2';
 
 export function getDefaultVisibleColumns(): string[] {
   const saved = localStorage.getItem(COLUMN_STORAGE_KEY);
@@ -64,6 +65,23 @@ function SortHeader({ label, sortKey: key, currentKey, currentDir, onSort, class
       </span>
     </th>
   );
+}
+
+function formatJoinedAt(value: string): string {
+  if (!value) return '—';
+  const normalized = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(value)
+    ? `${value.replace(' ', 'T')}Z`
+    : value;
+  const date = new Date(normalized);
+  if (Number.isNaN(date.getTime())) return value;
+  return date.toLocaleString('zh-CN', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  });
 }
 
 function CopyCell({ text, children, className = '' }: { text: string; children: React.ReactNode; className?: string }) {
@@ -217,6 +235,9 @@ export default function AccountTable({ accounts, selectedIds, onSelectIds, onEdi
             {isVisible('token_status') && (
               <SortHeader label="Token" sortKey="token_refreshed_at" currentKey={sortKey} currentDir={sortDir} onSort={handleSort} className="min-w-[80px]" />
             )}
+            {isVisible('created_at') && (
+              <SortHeader label="加入时间" sortKey="created_at" currentKey={sortKey} currentDir={sortDir} onSort={handleSort} className="min-w-[150px]" />
+            )}
             {isVisible('actions') && (
               <th className="min-w-[100px] text-right py-3 px-3 font-medium text-zinc-500 dark:text-zinc-400">操作</th>
             )}
@@ -301,6 +322,11 @@ export default function AccountTable({ accounts, selectedIds, onSelectIds, onEdi
               )}
               {isVisible('token_status') && (
                 <td className="py-3 px-3 text-center">{tokenStatusBadge(account)}</td>
+              )}
+              {isVisible('created_at') && (
+                <td className="py-3 px-3 text-xs whitespace-nowrap text-zinc-500 dark:text-zinc-400">
+                  {formatJoinedAt(account.created_at)}
+                </td>
               )}
               {isVisible('actions') && (
                 <td className="py-3 px-3">
