@@ -16,3 +16,6 @@ web/src/components/ui/
 *.crt
 *.tsbuildinfo
 .claude/
+# Local credential import files
+/accounts.txt
+/outlook-accounts*.txt

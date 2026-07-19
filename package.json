@@ -8,7 +8,9 @@
     "dev:web": "cd web && npm run dev",
     "build": "cd web && npm run build",
     "start": "cd server && npm start",
-    "install:all": "npm install && cd server && npm install && cd ../web && npm install"
+    "install:all": "npm install && cd server && npm install && cd ../web && npm install",
+    "import:outlook": "node scripts/import-outlook-accounts.mjs",
+    "test:import-outlook": "node --test scripts/import-outlook-accounts.test.mjs"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"

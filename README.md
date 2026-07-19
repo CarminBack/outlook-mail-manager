@@ -184,3 +184,26 @@ HOST_PORT=3020 docker compose up -d
 ```
 
 默认镜像为 `ghcr.io/carminback/outlook-mail-manager:latest`，SQLite 数据保存在 Docker 卷 `outlook-mail-manager-data` 中，服务默认仅绑定到宿主机 `127.0.0.1:3020`，适合通过反向代理提供 HTTPS。
+
+## 只有邮箱账号密码时的批量导入
+
+个人 Outlook/Hotmail 账户不能通过受支持的 OAuth 密码模式直接换取令牌。仓库提供的脚本会读取账号文件中的邮箱地址，然后逐个打开微软官方设备授权页面；授权成功后，它会取得 `refresh_token` 并直接调用本系统导入接口。账号文件中的密码字段仅用于兼容已有格式，脚本不会使用、上传、打印或另行保存邮箱密码。
+
+先在 Microsoft Entra 创建支持“任何组织目录和个人 Microsoft 账户”的应用注册，启用公共客户端流，并添加 Microsoft Graph 委托权限 `User.Read` 和 `Mail.Read`。然后准备文件：
+
+```text
+first@outlook.com----password1
+second@hotmail.com----password2
+```
+
+执行：
+
+```bash
+MICROSOFT_CLIENT_ID='应用客户端ID' \
+OUTLOOK_MANAGER_URL='https://outlook.mewinyou.shop' \
+OUTLOOK_MANAGER_USERNAME='管理器登录账号' \
+OUTLOOK_MANAGER_PASSWORD='管理器登录密码' \
+npm run import:outlook -- ./accounts.txt
+```
+
+脚本不会把 refresh token 写入本地文件，而是在每个账户授权成功后立即提交到邮箱管理器。不要把账号文件、管理器密码或 refresh token 提交到 Git。
