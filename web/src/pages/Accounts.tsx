@@ -13,9 +13,9 @@ import BackupRestore from '../components/accounts/BackupRestore';
 
 export default function Accounts() {
   const {
-    accounts, loading, selectedIds, searchQuery, pagination,
+    accounts, loading, selectedIds, searchQuery, joinedDate, pagination,
     fetchAccounts, createAccount, updateAccount, deleteAccount, batchDelete,
-    importAccounts, exportAccounts, setSelectedIds, setSearchQuery, setPage, setPageSize,
+    importAccounts, exportAccounts, setSelectedIds, setSearchQuery, setJoinedDate, setPage, setPageSize,
   } = useAccountStore();
 
   const { tags, fetchTags, createTag, deleteTag, setAccountTags } = useTagStore();
@@ -150,7 +150,9 @@ export default function Accounts() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">邮箱管理</h1>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">共 {pagination.total} 个邮箱账户</p>
+          <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+            {joinedDate ? `${joinedDate} 加入的邮箱：${pagination.total} 个` : `共 ${pagination.total} 个邮箱账户`}
+          </p>
         </div>
         <div className="flex items-center gap-3">
           <BackupRestore />
@@ -168,6 +170,8 @@ export default function Accounts() {
       <AccountToolbar
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
+        joinedDate={joinedDate}
+        onJoinedDateChange={setJoinedDate}
         selectedCount={selectedIds.length}
         onFileImport={() => setImportOpen(true)}
         onPasteImport={() => setPasteOpen(true)}

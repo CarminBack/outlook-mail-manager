@@ -15,6 +15,7 @@ export function runMigrations() {
     );
 
     CREATE UNIQUE INDEX IF NOT EXISTS idx_accounts_email ON accounts(email);
+    CREATE INDEX IF NOT EXISTS idx_accounts_created_at ON accounts(created_at);
 
     CREATE TABLE IF NOT EXISTS proxies (
       id INTEGER PRIMARY KEY AUTOINCREMENT,

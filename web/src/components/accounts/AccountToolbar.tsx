@@ -1,9 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
+import { CalendarDays, X } from 'lucide-react';
 import { ALL_COLUMNS } from './AccountTable';
 
 interface Props {
   searchQuery: string;
   onSearchChange: (q: string) => void;
+  joinedDate: string;
+  onJoinedDateChange: (date: string) => void;
   selectedCount: number;
   onFileImport: () => void;
   onPasteImport: () => void;
@@ -71,7 +74,7 @@ function ColumnSettingsDropdown({ visibleColumns, onColumnsChange }: { visibleCo
 }
 
 export default function AccountToolbar({
-  searchQuery, onSearchChange, selectedCount,
+  searchQuery, onSearchChange, joinedDate, onJoinedDateChange, selectedCount,
   onFileImport, onPasteImport, onExportSelected, onExportAll,
   onDeleteSelected, onDeleteAll,
   visibleColumns, onColumnsChange,
@@ -90,6 +93,31 @@ export default function AccountToolbar({
           placeholder="搜索邮箱..."
           className="w-full pl-9 pr-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
+      </div>
+
+      <div className="flex items-center gap-1.5">
+        <label className="inline-flex h-9 items-center gap-2 rounded-lg border border-zinc-300 bg-white px-3 text-sm text-zinc-600 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
+          <CalendarDays className="h-4 w-4 shrink-0 text-zinc-400" aria-hidden="true" />
+          <span className="whitespace-nowrap">加入日期</span>
+          <input
+            type="date"
+            value={joinedDate}
+            onChange={e => onJoinedDateChange(e.target.value)}
+            aria-label="按加入日期筛选"
+            className="min-w-[120px] bg-transparent text-sm text-zinc-900 outline-none dark:text-zinc-100"
+          />
+        </label>
+        {joinedDate && (
+          <button
+            type="button"
+            onClick={() => onJoinedDateChange('')}
+            title="清除加入日期筛选"
+            aria-label="清除加入日期筛选"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-zinc-300 text-zinc-500 transition-colors hover:bg-zinc-100 dark:border-zinc-600 dark:text-zinc-400 dark:hover:bg-zinc-800"
+          >
+            <X className="h-4 w-4" aria-hidden="true" />
+          </button>
+        )}
       </div>
 
       <div className="flex items-center gap-1.5 flex-wrap">

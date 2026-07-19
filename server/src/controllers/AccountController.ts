@@ -8,8 +8,13 @@ const tagModel = new TagModel();
 
 export class AccountController {
   async list(ctx: Context) {
-    const { page = '1', pageSize = '20', search = '' } = ctx.query as Record<string, string>;
-    const data = model.list(parseInt(page), parseInt(pageSize), search);
+    const { page = '1', pageSize = '20', search = '', joinedFrom = '', joinedTo = '' } = ctx.query as Record<string, string>;
+    const sqliteDateTime = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/;
+    const hasJoinedDateFilter = joinedFrom || joinedTo;
+    if (hasJoinedDateFilter && (!sqliteDateTime.test(joinedFrom) || !sqliteDateTime.test(joinedTo))) {
+      return fail(ctx, 'joinedFrom and joinedTo must use YYYY-MM-DD HH:mm:ss', 400);
+    }
+    const data = model.list(parseInt(page), parseInt(pageSize), search, joinedFrom, joinedTo);
     success(ctx, data);
   }
 

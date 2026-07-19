@@ -29,7 +29,7 @@ async function request<T>(url: string, options?: RequestInit): Promise<T> {
 }
 
 export const accountApi = {
-  list: (params?: { page?: number; pageSize?: number; search?: string }) =>
+  list: (params?: { page?: number; pageSize?: number; search?: string; joinedFrom?: string; joinedTo?: string }) =>
     request<PaginatedResponse<Account>>(`/accounts?${qs(params)}`),
   create: (data: Partial<Account>) =>
     request<Account>('/accounts', { method: 'POST', body: JSON.stringify(data) }),

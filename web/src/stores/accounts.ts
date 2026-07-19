@@ -7,6 +7,7 @@ interface AccountStore {
   loading: boolean;
   selectedIds: number[];
   searchQuery: string;
+  joinedDate: string;
   pagination: { page: number; pageSize: number; total: number };
   fetchAccounts: () => Promise<void>;
   refreshAccountsSilent: () => Promise<void>;
@@ -18,8 +19,22 @@ interface AccountStore {
   exportAccounts: (req: ExportRequest) => Promise<string>;
   setSelectedIds: (ids: number[]) => void;
   setSearchQuery: (q: string) => void;
+  setJoinedDate: (date: string) => void;
   setPage: (page: number) => void;
   setPageSize: (size: number) => void;
+}
+
+function toSqliteUtc(date: Date): string {
+  return date.toISOString().slice(0, 19).replace('T', ' ');
+}
+
+function getJoinedDateRange(joinedDate: string): { joinedFrom?: string; joinedTo?: string } {
+  if (!joinedDate) return {};
+  const start = new Date(`${joinedDate}T00:00:00`);
+  if (Number.isNaN(start.getTime())) return {};
+  const end = new Date(start);
+  end.setDate(end.getDate() + 1);
+  return { joinedFrom: toSqliteUtc(start), joinedTo: toSqliteUtc(end) };
 }
 
 export const useAccountStore = create<AccountStore>((set, get) => ({
@@ -27,13 +42,14 @@ export const useAccountStore = create<AccountStore>((set, get) => ({
   loading: false,
   selectedIds: [],
   searchQuery: '',
+  joinedDate: '',
   pagination: { page: 1, pageSize: 20, total: 0 },
 
   fetchAccounts: async () => {
     set({ loading: true });
     try {
       const { page, pageSize } = get().pagination;
-      const data = await accountApi.list({ page, pageSize, search: get().searchQuery });
+      const data = await accountApi.list({ page, pageSize, search: get().searchQuery, ...getJoinedDateRange(get().joinedDate) });
       set({ accounts: data.list, pagination: { page: data.page, pageSize: data.pageSize, total: data.total } });
     } finally {
       set({ loading: false });
@@ -43,7 +59,7 @@ export const useAccountStore = create<AccountStore>((set, get) => ({
   refreshAccountsSilent: async () => {
     try {
       const { page, pageSize } = get().pagination;
-      const data = await accountApi.list({ page, pageSize, search: get().searchQuery });
+      const data = await accountApi.list({ page, pageSize, search: get().searchQuery, ...getJoinedDateRange(get().joinedDate) });
       set(state => ({
         accounts: state.accounts.map(acc => {
           const fresh = data.list.find(a => a.id === acc.id);
@@ -91,6 +107,10 @@ export const useAccountStore = create<AccountStore>((set, get) => ({
 
   setSelectedIds: (ids) => set({ selectedIds: ids }),
   setSearchQuery: (q) => { set({ searchQuery: q }); get().fetchAccounts(); },
+  setJoinedDate: (date) => {
+    set(state => ({ joinedDate: date, selectedIds: [], pagination: { ...state.pagination, page: 1 } }));
+    get().fetchAccounts();
+  },
   setPage: (page) => { set(s => ({ pagination: { ...s.pagination, page } })); get().fetchAccounts(); },
   setPageSize: (size) => { set(s => ({ pagination: { ...s.pagination, pageSize: size, page: 1 } })); get().fetchAccounts(); },
 }));

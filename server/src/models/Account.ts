@@ -5,14 +5,19 @@ import { TagModel } from './Tag';
 const tagModel = new TagModel();
 
 export class AccountModel {
-  list(page = 1, pageSize = 20, search = ''): PaginatedResponse<Account> {
+  list(page = 1, pageSize = 20, search = '', joinedFrom = '', joinedTo = ''): PaginatedResponse<Account> {
     const offset = (page - 1) * pageSize;
-    let where = '';
+    const conditions: string[] = [];
     const params: any[] = [];
     if (search) {
-      where = 'WHERE email LIKE ?';
+      conditions.push('email LIKE ?');
       params.push(`%${search}%`);
     }
+    if (joinedFrom && joinedTo) {
+      conditions.push('created_at >= ? AND created_at < ?');
+      params.push(joinedFrom, joinedTo);
+    }
+    const where = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
     const total = (db.prepare(`SELECT COUNT(*) as c FROM accounts ${where}`).get(...params) as any).c;
     const list = db.prepare(`SELECT * FROM accounts ${where} ORDER BY id DESC LIMIT ? OFFSET ?`).all(...params, pageSize, offset) as Account[];
     const listWithTags = list.map(acc => ({
