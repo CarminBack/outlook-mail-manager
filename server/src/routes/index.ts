@@ -6,6 +6,7 @@ import { dashboardRoutes } from './dashboard';
 import { authRoutes } from './auth';
 import { tagRoutes } from './tags';
 import { backupRoutes } from './backup';
+import { oauthImportRoutes } from './oauthImport';
 
 const router = new Router({ prefix: '/api' });
 
@@ -16,5 +17,6 @@ router.use('/dashboard', dashboardRoutes.routes(), dashboardRoutes.allowedMethod
 router.use('/auth', authRoutes.routes(), authRoutes.allowedMethods());
 router.use('/tags', tagRoutes.routes(), tagRoutes.allowedMethods());
 router.use('/backup', backupRoutes.routes(), backupRoutes.allowedMethods());
+router.use('/oauth-import', oauthImportRoutes.routes(), oauthImportRoutes.allowedMethods());
 
 export default router;

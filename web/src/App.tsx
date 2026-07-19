@@ -5,6 +5,7 @@ import { AppLayout } from './components/layout/AppLayout';
 import Dashboard from './pages/Dashboard';
 import Accounts from './pages/Accounts';
 import ProxySettings from './pages/ProxySettings';
+import OAuthImport from './pages/OAuthImport';
 import { LoginDialog } from './components/auth/LoginDialog';
 import { authApi } from './lib/api';
 
@@ -48,6 +49,7 @@ export default function App() {
           <Route element={<AppLayout />}>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/accounts" element={<Accounts />} />
+            <Route path="/oauth-import" element={<OAuthImport />} />
             <Route path="/proxy" element={<ProxySettings />} />
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
           </Route>

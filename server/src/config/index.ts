@@ -11,4 +11,5 @@ export const config = {
   dbPath: path.resolve(__dirname, '../..', process.env.DB_PATH || './data/outlook.db'),
   accessUsername: process.env.ACCESS_USERNAME || '',
   accessPassword: process.env.ACCESS_PASSWORD || '',
+  microsoftClientId: process.env.MICROSOFT_CLIENT_ID || '',
 };

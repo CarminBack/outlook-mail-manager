@@ -1,4 +1,4 @@
-import type { ApiResponse, PaginatedResponse, Account, MailMessage, Proxy, ImportRequest, ImportResult, ExportRequest, DashboardStats, ProxyTestResult, FetchMailsResult, Tag, ImportPreviewResult } from '../types';
+import type { ApiResponse, PaginatedResponse, Account, MailMessage, Proxy, ImportRequest, ImportResult, ExportRequest, DashboardStats, ProxyTestResult, FetchMailsResult, Tag, ImportPreviewResult, OAuthImportStartResult, OAuthImportStatusResult } from '../types';
 
 const API_BASE = '/api';
 
@@ -97,4 +97,11 @@ export const tagApi = {
       `/accounts/${accountId}/tags`,
       { method: 'POST', body: JSON.stringify({ tag_ids: tagIds }) }
     ),
+};
+
+export const oauthImportApi = {
+  start: (email: string) =>
+    request<OAuthImportStartResult>('/oauth-import/start', { method: 'POST', body: JSON.stringify({ email }) }),
+  status: (sessionId: string) =>
+    request<OAuthImportStatusResult>('/oauth-import/status', { method: 'POST', body: JSON.stringify({ session_id: sessionId }) }),
 };

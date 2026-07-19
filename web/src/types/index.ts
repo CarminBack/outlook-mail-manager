@@ -123,3 +123,23 @@ export interface FetchMailsResult {
   protocol: 'graph' | 'imap';
   cached: boolean;
 }
+
+// ============ Microsoft OAuth 网页导入 ============
+export interface OAuthImportStartResult {
+  sessionId: string;
+  email: string;
+  userCode: string;
+  verificationUri: string;
+  verificationUriComplete: string;
+  expiresAt: string;
+  intervalSeconds: number;
+}
+
+export interface OAuthImportStatusResult {
+  email: string;
+  status: 'pending' | 'complete' | 'failed';
+  imported?: number;
+  skipped?: number;
+  error?: string;
+  retryAfterSeconds?: number;
+}

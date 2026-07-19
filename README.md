@@ -91,6 +91,7 @@ cp .env.example .env
 | `DB_PATH` | `./data/outlook.db` | SQLite 数据库路径（相对于 server/） |
 | `ACCESS_USERNAME` | _(空)_ | 登录账号；设置后登录时必须同时填写账号 |
 | `ACCESS_PASSWORD` | _(空)_ | 登录密码，留空则不启用认证 |
+| `MICROSOFT_CLIENT_ID` | _(空)_ | Microsoft 公共客户端应用 ID，用于网页 OAuth 导入 |
 
 ### 开发模式
 
@@ -184,6 +185,14 @@ HOST_PORT=3020 docker compose up -d
 ```
 
 默认镜像为 `ghcr.io/carminback/outlook-mail-manager:latest`，SQLite 数据保存在 Docker 卷 `outlook-mail-manager-data` 中，服务默认仅绑定到宿主机 `127.0.0.1:3020`，适合通过反向代理提供 HTTPS。
+
+## 网页 OAuth 批量导入
+
+配置 `MICROSOFT_CLIENT_ID` 后，登录管理器并打开侧边栏的 **OAuth 导入** 页面。每行粘贴一个 Outlook/Hotmail 邮箱，点击“开始 OAuth 导入”，然后按页面提示逐个打开微软官方授权页。
+
+网页会在服务端保存短期设备授权会话，并且只向浏览器返回微软显示用的授权码；`device_code`、access token 和 refresh token 不会返回浏览器。授权成功后，服务端会调用 Microsoft Graph 校验实际登录身份，只有身份与目标邮箱匹配时才会导入。
+
+首次授权仍可能要求密码、MFA、验证码、安全信息或 CAPTCHA，因此不能保证完全无人值守。授权成功后的 refresh token 刷新和 Graph 收信由系统自动处理。
 
 ## 只有邮箱账号密码时的批量导入
 

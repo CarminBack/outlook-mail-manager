@@ -1,10 +1,11 @@
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Users, Globe, Mail, X } from 'lucide-react';
+import { LayoutDashboard, Users, Globe, Mail, KeyRound, X } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
 const navItems = [
   { to: '/dashboard', icon: LayoutDashboard, label: '仪表盘' },
   { to: '/accounts', icon: Users, label: '邮箱管理' },
+  { to: '/oauth-import', icon: KeyRound, label: 'OAuth 导入' },
   { to: '/proxy', icon: Globe, label: '代理设置' },
 ];
 
